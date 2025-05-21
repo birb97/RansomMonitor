@@ -1,0 +1,39 @@
+services:
+  tor:
+    build:
+      context: .
+      dockerfile: Tor.Dockerfile
+    container_name: tor-proxy
+    restart: unless-stopped
+    networks:
+      - ransom_internal
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/healthcheck.sh"]
+      interval: 60s
+      timeout: 15s
+      retries: 3
+      start_period: 120s
+      
+  agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: collection-agent
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5000:5000"  # Only accessible from localhost
+    depends_on:
+      - tor
+    environment:
+      - TOR_HOST=tor
+      - TOR_PORT=9150
+      - API_SECRET=test-secret
+      - WORKER_TIMEOUT=240  # Increase worker timeout for slow .onion sites
+    networks:
+      - ransom_internal
+    # Add additional parameters for Gunicorn
+    command: ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--timeout", "240", "collection_agent:app"]
+
+networks:
+  ransom_internal:
+    driver: bridge
