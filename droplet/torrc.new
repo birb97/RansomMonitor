@@ -1,0 +1,12 @@
+# Configuration file for Tor
+#
+# This file is used to configure Tor securely
+# Binding to localhost only to avoid security warnings
+
+# SOCKS Proxy Configuration
+SocksPort 127.0.0.1:9150
+DNSPort 127.0.0.1:8853
+
+# General settings
+DataDirectory /var/lib/tor
+Log notice stderr
