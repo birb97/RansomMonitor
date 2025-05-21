@@ -10,10 +10,6 @@ import os
 import logging
 from utils.error_utils import ConfigError, handle_exception
 
-class ConfigError(Exception):
-    """Custom exception for configuration errors"""
-    pass
-
 class Config:
     """
     Configuration manager for the ransomware intelligence system.
